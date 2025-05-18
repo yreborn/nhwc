@@ -20,7 +20,8 @@ let gameState = {
     timeLeft: 60,
     timerInterval: null,
     isDrawing: false,
-    idiomHidden: false
+    idiomHidden: false,
+    hideTimeout: null
 };
 
 // DOM 元素
@@ -43,12 +44,9 @@ const finalScoreElement = document.getElementById('final-score');
 const canvas = document.getElementById('drawing-board');
 const ctx = canvas.getContext('2d');
 const clearCanvasBtn = document.getElementById('clear-canvas');
-const hideIdiomBtn = document.getElementById('hide-idiom');
 
 const guessInput = document.getElementById('guess-input');
 const submitGuessBtn = document.getElementById('submit-guess');
-const correctBtn = document.getElementById('correct-btn');
-const wrongBtn = document.getElementById('wrong-btn');
 const nextBtn = document.getElementById('next-btn');
 const playAgainBtn = document.getElementById('play-again');
 
@@ -105,10 +103,7 @@ function addEventListeners() {
     
     // 游戏按钮
     clearCanvasBtn.addEventListener('click', clearCanvas);
-    hideIdiomBtn.addEventListener('click', toggleIdiomVisibility);
     submitGuessBtn.addEventListener('click', checkGuess);
-    correctBtn.addEventListener('click', handleCorrect);
-    wrongBtn.addEventListener('click', handleWrong);
     nextBtn.addEventListener('click', nextIdiom);
     playAgainBtn.addEventListener('click', resetGame);
     
@@ -193,8 +188,6 @@ function startGame() {
     // 更新UI
     scoreElement.textContent = gameState.score;
     timerElement.textContent = gameState.timeLeft;
-    hideIdiomBtn.textContent = '隐藏成语';
-    hideIdiomBtn.classList.remove('active');
     
     // 随机打乱成语顺序
     shuffleIdioms();
@@ -228,11 +221,21 @@ function shuffleIdioms() {
 function showCurrentIdiom() {
     if (gameState.currentIdiomIndex < gameState.idioms.length) {
         const currentIdiom = gameState.idioms[gameState.currentIdiomIndex];
-        if (gameState.idiomHidden) {
-            currentIdiomElement.textContent = '*'.repeat(currentIdiom.length);
-        } else {
-            currentIdiomElement.textContent = currentIdiom;
+        
+        // 总是先显示成语
+        gameState.idiomHidden = false;
+        currentIdiomElement.textContent = currentIdiom;
+        
+        // 清除之前的定时器
+        if (gameState.hideTimeout) {
+            clearTimeout(gameState.hideTimeout);
         }
+        
+        // 设置3秒后自动隐藏
+        gameState.hideTimeout = setTimeout(() => {
+            gameState.idiomHidden = true;
+            currentIdiomElement.textContent = '*'.repeat(currentIdiom.length);
+        }, 3000);
     } else {
         endGame();
     }
@@ -271,6 +274,9 @@ function checkGuess() {
     
     if (guess === currentIdiom) {
         handleCorrect();
+        
+        // 显示成功消息
+        showSuccessMessage();
     } else {
         // 可以添加提示或者其他反馈
         guessInput.classList.add('wrong');
@@ -281,6 +287,25 @@ function checkGuess() {
     
     guessInput.value = '';
     guessInput.focus();
+}
+
+// 显示成功消息
+function showSuccessMessage() {
+    // 创建成功消息元素
+    const successMessage = document.createElement('div');
+    successMessage.className = 'success-message';
+    successMessage.innerHTML = '猜对了！<span style="margin-left: 10px;">🎉</span>';
+    
+    // 添加到页面
+    document.body.appendChild(successMessage);
+    
+    // 2秒后移除
+    setTimeout(() => {
+        successMessage.style.animation = 'popIn 0.5s reverse forwards';
+        setTimeout(() => {
+            document.body.removeChild(successMessage);
+        }, 500);
+    }, 1500);
 }
 
 // 处理猜对
@@ -327,6 +352,12 @@ function endGame() {
     if (gameState.timerInterval) {
         clearInterval(gameState.timerInterval);
         gameState.timerInterval = null;
+    }
+    
+    // 清除隐藏成语的定时器
+    if (gameState.hideTimeout) {
+        clearTimeout(gameState.hideTimeout);
+        gameState.hideTimeout = null;
     }
     
     // 更新最终得分
@@ -380,4 +411,8 @@ function toggleIdiomVisibility() {
     // 更新按钮文本
     hideIdiomBtn.textContent = gameState.idiomHidden ? '显示成语' : '隐藏成语';
     hideIdiomBtn.classList.toggle('active', gameState.idiomHidden);
+}
+// 移除不再需要的函数
+function toggleIdiomVisibility() {
+    // 此函数不再需要，但保留以避免引用错误
 }

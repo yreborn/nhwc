@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>你画我猜 - 成语版</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <div id="start-screen" class="screen active">
             <h1>成语你画我猜</h1>
             <div class="game-intro">
-                <p>画出成语，让朋友猜一猜！</p>
-                <p>每轮游戏60秒，看看你能猜对多少个！</p>
+                <p>画出成语，让朋友猜一猜！<span style="font-size: 1.5em;">✏️</span></p>
+                <p>每轮游戏60秒，看看你能猜对多少个！<span style="font-size: 1.5em;">⏱️</span></p>
             </div>
             <button id="start-game" class="btn pulse">开始游戏</button>
             <button id="settings-btn" class="btn">设置成语库</button>
@@ -39,29 +40,26 @@
                     得分: <span id="score">0</span>
                 </div>
             </div>
-            
+
             <div class="game-content">
                 <div class="idiom-display">
                     <h2>当前成语:</h2>
                     <div id="current-idiom" class="idiom">加载中...</div>
                 </div>
-                
+
                 <div class="drawing-area">
                     <canvas id="drawing-board" width="300" height="300"></canvas>
                     <div class="drawing-tools">
                         <button id="clear-canvas" class="tool-btn">清除画板</button>
-                        <button id="hide-idiom" class="tool-btn">隐藏成语</button>
                     </div>
                 </div>
-                
+
                 <div class="guess-area">
                     <div class="guess-input">
                         <input type="text" id="guess-input" placeholder="输入你猜的成语">
                         <button id="submit-guess" class="btn">猜!</button>
                     </div>
                     <div class="action-buttons">
-                        <button id="correct-btn" class="btn success-btn">猜对了</button>
-                        <button id="wrong-btn" class="btn danger-btn">猜错了</button>
                         <button id="next-btn" class="btn">下一个</button>
                     </div>
                 </div>
@@ -75,6 +73,9 @@
                     <div class="confetti">🎉</div>
                     恭喜你猜对了 <span id="final-score">0</span> 个成语!
                     <div class="confetti">🎉</div>
+                </div>
+                <div class="anime-character">
+                    <img src="https://i.imgur.com/JDZqZtK.png" alt="动漫角色" style="width: 150px; height: auto;">
                 </div>
                 <button id="play-again" class="btn pulse">再玩一次</button>
             </div>
